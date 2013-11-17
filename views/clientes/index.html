@@ -1,0 +1,129 @@
+{{right_sidebar_enabled = True}}
+{{extend 'layout.html'}}
+
+{{block right_sidebar}}
+    {{include 'clientes/bt_controller.html'}}
+{{end}}
+
+
+<!--
+
+#############  CREATE_FORM  #############
+
+-->
+<div class="well">
+    {{if grid.create_form:}}
+        <h3>Añadir Cliente</h3>
+        <hr class="bs-docs-separator">
+        {{=grid.create_form}}
+
+<!--
+
+#############  UPDATE_FORM  #############
+
+-->
+    {{elif grid.update_form:}}
+        <h3>Actualizar Cliente</h3>
+        <hr class="bs-docs-separator">
+        {{=grid.update_form}}
+
+
+<!--
+
+#############  VIEW_FORM  #############
+
+-->
+    {{elif grid.view_form:}}
+        {{grid.view_form.custom.begin}}
+            {{cliente = grid.view_form.custom}}
+            <h3>Cliente: 
+                <span style="color:#6aa70b">
+                    {{=cliente.widget.apellido}}, 
+                    {{=cliente.widget.nombre}}
+                </span>
+            </h3>
+            <hr class="bs-docs-separator">
+            
+            <div class="tabbable"> <!-- Only required for left/right tabs -->
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#cli_datos" data-toggle="tab">
+                            <i class='icon-briefcase'></i> Datos 
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#cli_deudas" data-toggle="tab">
+                            <i class='icon-exclamation-sign'></i> Deudas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#cli_prestamos" data-toggle="tab">
+                            <i class='icon-shopping-cart'></i> Prestamos
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="tab-content">
+                    <div class="tab-pane active" id="cli_datos">
+                        <table class="table table-striped" style="width:80%">
+                            <tbody>
+                                <tr>
+                                    <td width="25%"><strong>{{=cliente.label.dni}}:</strong>
+                                    <td colspan="3">{{=cliente.widget.dni}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>{{=cliente.label.domicilio}}:</strong></td>
+                                    <td colspan="3">{{=cliente.widget.domicilio or '-'}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>{{=cliente.label.telefono}}:</strong></td>
+                                    <td colspan="3">{{=cliente.widget.telefono or '-'}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>{{=cliente.label.tipo_cliente}}:</strong></td>
+                                    <td>{{=cliente.widget.tipo_cliente.title()}}</td>
+                                    <td style='text-align:right'>
+                                        <strong>{{=cliente.label.movil}}:</strong>
+                                    </td>
+                                    <td><span class="label label-success">
+                                        {{=cliente.widget.movil or '-'}}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <div class="tab-pane" id="cli_deudas">
+                        {{=LOAD('prestadmin', 'deudas_cliente.load', ajax=True,
+                                args=cliente.dspval.id,
+                                user_signature=True)}}
+                                
+                        <div id='detalle_prestamo'></div>
+
+                    </div>
+                    <div class="tab-pane" id="cli_prestamos">
+                        {{=LOAD('prestadmin', 'generar_prestamo.load', ajax=True,
+                                vars=dict(cliente_id=cliente.dspval.id),
+                                user_signature=True)}}
+                    </div>
+                </div>
+            </div>
+
+        {{=grid.view_form.custom.end}}
+
+
+
+<!--
+
+#############  GRID_FORM  #############
+
+-->
+    {{else:}}
+        <h3>Administrar Clientes</h3>
+        <hr class="bs-docs-separator">
+        {{=grid}}
+
+    {{pass}}
+
+</div>

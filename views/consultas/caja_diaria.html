@@ -1,0 +1,98 @@
+{{extend 'layout.html'}}
+<script src="{{=URL('static','js/highcharts.js')}}"></script>
+
+<div class='well'>
+<h3>Fecha: <span style="color:#6aa70b">{{=request.vars.get('fecha', '-')}} </span> / 
+    Periodo: <span style="color:#6aa70b">{{=results.get('periodo', '-')}}</span>
+</h3>
+
+<hr class="bs-docs-separator">
+
+{{=form.custom.begin}}
+
+    <div class="input-append">
+        {{=form.custom.widget.fecha}}
+        <button type="submit" class="btn btn-primary">
+            <i class="icon-search icon-white"></i>
+        </button>
+    </div>
+    {{if form.errors:}}
+        <div class="alert alert-error" style="width:260px;">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Atención!</strong> Debe ingresar un fecha
+        </div>
+        {{form.errors.clear()}}
+    {{pass}}
+{{=form.custom.end}}
+
+
+
+{{if request.vars.fecha:}}
+<div class='container'>
+
+    <div class='span4'>
+        <h4>Resultados Obtenidos</h4>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td>Cantidad de cuotas a pagar en el periodo</td>
+                    <td>
+                        <h5 style="color:#dd514c;">
+                            {{=results.get('Q_PERIODO', 0)}}
+                        </h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Cantidad de cuotas abonadas en el periodo</td>
+                    <td>
+                        <h5 style="color:#5eb95e">
+                            {{=results.get('Q_ABONADAS', 0)}}
+                        </h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Recaudación en Pesos durante el periodo 
+                        {{=results.get('periodo', None)}}</td>
+                    <td><h5>${{=results.get('TQ_ABONADAS', 0)}}</h5></td>
+                </tr>
+                <tr>
+                    <td>Cantidad de Cuotas Abonadas en la fecha {{=request.vars.fecha}}</td>
+                    <td><h5>{{=results.get('Q_ABONADAS_DATE', 0)}}</h5></td>
+                </tr>
+                <tr>
+                    <td>Recaudación en Pesos durante la fecha
+                     {{=request.vars.fecha}}</td>
+                     <td><h5>${{=results.get('TQ_ABONADAS_DATE', 0)}}</h5></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class='span6'>
+        <h4>Gráficas</h4>
+        <ul>
+            <li>
+                <p style="color:#5eb95e"> 
+                    Nº de Cuotas Abonadas en el periodo
+                </p>
+            </li>
+            <li>
+                <p style="color:#dd514c">
+                    Nº Total de Cuotas sin abonarse durante el periodo
+                </p>
+            </li>
+        </ul>
+        <div class="progress">
+            <div class="bar bar-success" style="width:{{=results.get('G_XCIEN', "0")[0]}}%;">
+                {{=results.get('G_XCIEN', "0")[0]}}%
+            </div>
+            <div class="bar bar-danger" style="width:{{=results.get('G_XCIEN', "0")[1]}}%;">
+                {{=results.get('G_XCIEN', "0")[1]}}%
+            </div>
+        </div>
+        <div id="grafico" style="height:450px; width:600px;"></div>
+    </div>
+</div>
+{{pass}}
+
+</div>

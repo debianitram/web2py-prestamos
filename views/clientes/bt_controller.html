@@ -1,0 +1,29 @@
+<div class='well well-small'>
+    {{menu = [LI(request.controller, _class='nav-header'),
+              LI(_class='divider')]}}
+
+    {{if request.controller == 'clientes':}}
+        <!-- SQLFORM.grid(db.cliente) -->
+        {{bt_base = [[SPAN(I(_class='icon-th'), ' Principal'), 
+                      True,
+                      URL(c=request.controller, f='index', user_signature=True)],
+                     [SPAN(I(_class='icon-plus'), ' Añadir'), 
+                      True,
+                      URL(c=request.controller, f='index',
+                          args=['new', container.cliente.name_table],
+                          user_signature=True)],
+                      LI(_class='divider')]}}
+
+        {{if 'view' in request.args or 'new' in request.args or \
+             'edit' in request.args:}}
+            {{bt_base.append(LI('Acciones', _class='nav-header'))}}
+            {{bt_base += [LI(btn) for btn in grid.components[0]]}}
+            {{menu += bt_base}}
+        {{else:}}
+            {{menu += bt_base}}
+        {{pass}}
+
+    {{pass}}
+
+    {{=MENU(menu, _class='nav nav-list')}}
+</div>

@@ -1,0 +1,70 @@
+<h4>Generar un crédito</h4>
+<div class='row'>
+
+    <div class='span4 alert alert-success'>
+        {{=form.custom.begin}}
+        <table>
+            <tbody>
+                <tr><td>{{=form.custom.label.cliente_id}}: 
+                <strong>{{=form.custom.widget.cliente_id}}</strong></td></tr>
+                <tr>
+                    <td>{{=form.custom.label.fecha}} 
+                        <span style='color:red'>*</span>
+                    </td>
+                </tr>
+                <tr><td>{{=form.custom.widget.fecha}}</td></tr>
+                <tr>
+                    <td>{{=form.custom.label.tipo_credito}} 
+                        <span style='color:red'>*</span>
+                    </td>
+                </tr>
+                <tr><td>{{=form.custom.widget.tipo_credito}}</td></tr>
+                <tr>
+                    <td>{{=form.custom.label.cuotas}} 
+                        <span style='color:red'>*</span>
+                    </td>
+                </tr>
+                <tr><td>{{=form.custom.widget.cuotas}}</td></tr>
+                <tr>
+                    <td>{{=form.custom.label.monto}} 
+                        <span style='color:red'>*</span>
+                    </td>
+                </tr>
+                <tr><td>{{=form.custom.widget.monto}}</td></tr>
+                <tr><td>{{=form.custom.label.concepto}}</td></tr>
+                <tr><td>{{=form.custom.widget.concepto}}</td></tr>
+                <tr>
+                    <td>{{=form.custom.label.interes}} 
+                        <span style='color:red'>*</span>
+                    </td>
+                </tr>
+                <tr><td>{{=form.custom.widget.interes}}</td></tr>
+                <tr><td>{{=form.custom.label.observacion}}</td></tr>
+                <tr><td>{{=form.custom.widget.observacion}}</td></tr>
+            </tbody>
+        </table>
+        <div class="form-actions">
+            {{=form.custom.submit}}
+        </div>
+        {{=form.custom.end}}
+    </div>
+
+    <div class='span4'>
+        <span class='btn btn-mini btn-inverse' 
+              onclick="return preview();">
+              <i class='icon icon-white icon-zoom-in'></i> Pre-visualizar</span>
+        <hr class="bs-docs-separator" />
+
+        <div id="preview"></div>
+
+    </div>
+
+</div>
+
+<script>
+    function preview(){
+        ajax('{{=URL("cuotas", "preview", user_signature=True)}}',
+                 ['fecha', 'tipo_credito', 'monto', 'cuotas', 'interes'],
+                 'preview');
+        }
+</script>
