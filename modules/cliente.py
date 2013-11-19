@@ -30,7 +30,8 @@ class cliente(objbase):
             Field('tipo_cliente', 'list:string'),
             Field('movil'),
             auth.signature,
-            format='%(apellido)s, %(nombre)s'
+            format='%(apellido)s, %(nombre)s',
+            common_filter=lambda q: db[self.name_table].is_active == True,
             )
 
         # Configuraciones
@@ -74,7 +75,6 @@ class cliente(objbase):
                     )
 
     # Controles
-        # Controles.
     def oncreate(self, form):
         msg = 'Añadió un cliente éxitosamente'
         self.container.env.session.flash = msg

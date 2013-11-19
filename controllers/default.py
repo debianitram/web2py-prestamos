@@ -1,15 +1,5 @@
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
-
-#########################################################################
-## This is a sample controller
-## - index is the default action of any application
-## - user is required for authentication and authorization
-## - download is for downloading files uploaded in the db (does streaming)
-## - call exposes all registered services (none by default)
-#########################################################################
-
-
 def index():    
     cuota = container.cuota
     cliente = container.cliente
@@ -91,6 +81,7 @@ def index():
     return dict(grid=grid)
 
 
+
 def user():
     """
     exposes:
@@ -108,6 +99,8 @@ def user():
     """
     return dict(form=auth())
 
+
+
 @cache.action()
 def download():
     """
@@ -115,6 +108,7 @@ def download():
     http://..../[app]/default/download/[filename]
     """
     return response.download(request, db)
+
 
 
 def call():
@@ -125,6 +119,7 @@ def call():
     supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
     """
     return service()
+
 
 
 @auth.requires_signature()

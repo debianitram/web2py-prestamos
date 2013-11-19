@@ -35,7 +35,8 @@ class prestamo(objbase):
             Field('observacion', 'text'),
             Field('estado', 'list:string', default=1),
             auth.signature,
-            format='%(id)s:%(cliente_id)s->%(fecha)s'
+            format='%(id)s:%(cliente_id)s->%(fecha)s',
+            common_filter=lambda q: db[self.name_table].is_active == True
             )
 
         # Configuraciones

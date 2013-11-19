@@ -6,10 +6,12 @@ def deudas_cliente():
     return dict(grid=grid)
 
 
+
 @auth.requires_signature()
 def detalle_prestamo():
     prestamo = container.prestamo
     return prestamo.detalle(request.vars.pid)
+
 
 
 @auth.requires_signature()
@@ -25,7 +27,10 @@ def cancelar_prestamo():
     db(q).update_naive(estado=4)
     db.commit()
     
-    return "$('#dresumen_tr_%s').hide(); $('#detalle_prestamo').html(' ');" % prestamo_id
+    jquery = "$('#dresumen_tr_%s').hide(); $('#detalle_prestamo').html(' ');" 
+    return jquery % prestamo_id
+
+
 
 @auth.requires_signature()
 def generar_prestamo():

@@ -32,7 +32,9 @@ class cuota(objbase):
             Field('cod_year_month', 'string',
                   compute=lambda r: r['fecha_limite'].strftime('%Y-%m')),
             auth.signature,
-            format='%(prestamo_id)s')
+            format='%(prestamo_id)s',
+            common_filter=lambda q: db[self.name_table].is_active == True
+            )
 
         # Configuración
         self.labels(db[self.name_table])
