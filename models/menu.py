@@ -7,8 +7,8 @@
 
 response.logo = A(B('Colmena Labs'),XML('&trade;&nbsp;'),
                   _class="brand",_href="http://colmenalabs.com.ar/")
-response.title #= 'Sistema de Prestamos'
-response.subtitle #= 'Villa Parque - ver. 1.0'
+response.title = 'Sistema de Prestamos'
+response.subtitle = 'Villa Parque - ver. 1.0'
 
 ## read more at http://dev.w3.org/html5/markup/meta.name.html
 response.meta.author = 'Martín Miranda <debianitram@gmail.com>'
@@ -36,9 +36,13 @@ response.menu = [
            False,
            URL('clientes', 'index')
            ),
+          (SPAN(I(_class='icon-align-justify'), ' Conceptos'), 
+           False,
+           URL('prestadmin', 'conceptos')
+           ),
           (SPAN(I(_class='icon-filter'), ' Consultas'),
            False,
-           URL('consultas', 'index')),
+           URL('consultas', 'caja_diaria')),
           LI(_class='divider'),
           (SPAN('Admin'), False, None, [
             ('Interfaz administrativa',

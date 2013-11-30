@@ -31,7 +31,9 @@
                     </td>
                 </tr>
                 <tr><td>{{=form.custom.widget.monto}}</td></tr>
-                <tr><td>{{=form.custom.label.concepto}}</td></tr>
+                <tr><td>{{=form.custom.label.concepto}} | 
+                        {{=form.custom.comment.concepto}}
+                </td></tr>
                 <tr><td>{{=form.custom.widget.concepto}}</td></tr>
                 <tr>
                     <td>{{=form.custom.label.interes}} 
@@ -61,6 +63,7 @@
 
 </div>
 
+{{=modal}}
 <script>
     function preview(){
         ajax('{{=URL("cuotas", "preview", user_signature=True)}}',

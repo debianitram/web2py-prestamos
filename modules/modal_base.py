@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #-*- encoding:utf-8 -*-
-
+# debianitram (at) colmenalabs.com.ar
 
 # Modal base.
 
@@ -69,5 +69,6 @@ class ModalBase(object):
                                 args=current.request.args,
                                 vars=dict(_ajax_add=self.modal_key),
                                 target=self.modal_target,
-                                ajax=True)
+                                ajax=True,
+                                user_signature=True)
                                 )

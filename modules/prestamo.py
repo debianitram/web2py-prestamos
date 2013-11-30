@@ -6,7 +6,7 @@
 from gluon.dal import Field
 from gluon.validators import IS_NOT_EMPTY, IS_NOT_IN_DB, IS_IN_SET, IS_IN_DB
 from gluon.html import TABLE, THEAD, TBODY, TR, TH, TD, SPAN, I, URL, H4, H5
-from gluon.html import STRONG, TAG, HR, CENTER, STYLE, INPUT, TAG, SCRIPT
+from gluon.html import STRONG, TAG, HR, CENTER, STYLE, INPUT, TAG, SCRIPT, A
 from objeto_base import objbase
 from decimal import Decimal
 
@@ -88,12 +88,12 @@ class prestamo(objbase):
     def deudas(self, cliente_id):
         dbprestamo = self.container.db[self.name_table]
         query = dbprestamo.cliente_id == cliente_id
-        query &= dbprestamo.is_active != False
         query &= dbprestamo.estado == 1
 
         f = self.getFields('id', 'fecha', 'concepto', 'monto', \
                            'cuotas', 'interes', 'monto_total')
-        return self.container.db(query).select(*f, orderby=~f[1])
+        return self.container.db(query).select(*f, 
+                                                orderby=~dbprestamo.created_on)
 
     def resumen_deudas(self, cliente_id):
         # Datos para el comportamiento AJAX
@@ -154,7 +154,7 @@ class prestamo(objbase):
             function cancelar(prestamo){
                 jQuery('#IDPrestamo').val(prestamo);
                 if(confirm('Desea cancelar el Prestamo?')){
-                    ajax('%s', ['idprestamo', 'dresumentr'], ':eval');
+                    ajax('%s', ['idprestamo'], ':eval');
                 }
                 else {
                     jQuery('#IDPrestamo').val('');
@@ -171,7 +171,15 @@ class prestamo(objbase):
 
         prestamo = self.search('id', 'equal', prestamo_id).first()
 
-        body = [TR(
+        body = [TR(TD(title, _colspan=3),
+                    TD(A(I(_class='icon-print'), ' Planilla control',
+                        _href=URL('prestadmin', 'planilla_prestamo',
+                                  args=(prestamo.id),
+                                  user_signature=True),
+                        _class='btn btn-mini'),
+                    _style='vertical-align:middle;')
+                ),
+                TR(
                     TD(STRONG('Crédito ID:'), _width="10%"),
                     TD(prestamo.id, _width="30%"),
                     TD(STRONG('F. Emisión:'), _style='text-align:right'),
@@ -200,12 +208,12 @@ class prestamo(objbase):
                     TD(STRONG('Observaciones:')),
                     TD(prestamo.observacion, _colspan=2)
                 )]
-        table = TABLE(TBODY(*body), 
+        table = TABLE(TBODY(*body),
+                      _valign="middle",
                       _class='table table-condensed', 
                       _style='width:80%')
 
         tag_detalle = TAG[''](separador, 
-                              title,
                               table,
                               cuota.resumen(prestamo.id))
 

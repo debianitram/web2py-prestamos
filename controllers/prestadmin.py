@@ -34,9 +34,19 @@ def cancelar_prestamo():
 
 @auth.requires_signature()
 def generar_prestamo():
+    from modal_FieldsReference import modalFieldReference as mfr
+    
     prestamo = container.prestamo
     cuota = container.cuota
     cliente_id = request.vars.get('cliente_id')
+
+    modal = mfr(db[prestamo.name_table].concepto,
+                btn_title='Agregar nuevo concepto',
+                btn_icon='icon-plus-sign',
+                modal_title='Nuevo | Concepto',
+                modal_key=str(db[prestamo.name_table].concepto).replace('.', '_')
+                )
+    db[prestamo.name_table].concepto.comment = modal.btn()
 
     # Config fields
     cliente, f_emision = prestamo.getFields('cliente_id', 'fecha')
@@ -47,15 +57,51 @@ def generar_prestamo():
     form = SQLFORM(db[prestamo.name_table])
 
     if form.accepts(request.vars, session):
-        session.flash = "Se generó el prestamo exitosamente"
-        
         # Generar e insertar las cuotas en la BD
         cuota.generar(form, insert=True)
-        # Redireccionamos
-        url = URL(c='clientes', f='index', 
-                  args=['view', 'cliente', cliente_id],
+        # Creamos url de redirección
+        url = URL(c='prestadmin', f='planilla_prestamo', 
+                  args=[form.vars.id],
                   user_signature=True, extension=False)
         
         redirect(url, client_side=True)
     
-    return dict(form=form)
+    return dict(form=form, modal=modal.modal())
+
+
+
+@auth.requires_signature()
+def planilla_prestamo():
+    from StringIO import StringIO
+    from reporte.planilla_control import planilla_control
+    from gluon.contenttype import contenttype
+
+    out = StringIO()
+    report = planilla_control(out, request.args(-1))
+    report.render()
+    data = out.getvalue()
+    out.close()
+    response.headers['Content-Type'] = contenttype('.pdf')
+    return data
+
+
+
+@auth.requires_login()
+def conceptos():
+    concepto = container.concepto_prestamo
+
+    fields = concepto.getFields('nombre', 'descripcion')
+    query = concepto.search('id', 'greater', get_query=True)
+
+    grid = SQLFORM.grid(query,
+                        fields=fields,
+                        maxtextlength=50,
+                        csv=False,
+                        editable=False,
+                        ondelete=concepto.hide_record)
+
+    # Change class for buttons submit.
+    if grid.element('input', _type='submit'):
+        grid.element('input', _type='submit')['_class'] = 'btn btn-success'
+
+    return dict(grid=grid)

@@ -137,7 +137,7 @@ class planilla_control(ReporteBase):
             resumen.append([
                         Pg('%s' % c.nro, stylePg(alignment='center')),
                         Pg('%s' % c.fecha_limite, stylePg(alignment='center')),
-                        '',
+                        Pg('$%.2f' % c.valor_cuota, stylePg(alignment='center')),
                         ''])
 
         return Table(resumen, 

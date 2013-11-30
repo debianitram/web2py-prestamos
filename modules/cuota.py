@@ -5,7 +5,7 @@
 
 from gluon.dal import Field
 from gluon.validators import IS_NOT_EMPTY, IS_NOT_IN_DB, IS_IN_SET
-from gluon.html import TABLE, THEAD, TBODY, TR, TH, TD
+from gluon.html import TABLE, THEAD, TBODY, TR, TH, TD, STRONG
 from gluon.html import SCRIPT, CENTER, URL, INPUT, H4, SPAN, I, HR, TAG
 from gluon.http import redirect
 from objeto_base import objbase
@@ -112,11 +112,14 @@ class cuota(objbase):
                       _class='table table-striped table-condensed')
 
         tbody = TBODY()
+        debe = list()
+        pago = list()
         for cuota in cuotas:
             tbody.append(TR(
                     TD(cuota.nro),
                     TD("$%.2f" % cuota.valor_cuota),
-                    TD(cuota.fecha_limite),
+                    TD(cuota.fecha_limite,
+                       _title=cuota.fecha_limite.strftime('%A %Y/%m/%d')),
                     TD(self.get_estado(cuota)),
                     TD(cuota.fecha_pago or '-'),
                     TD(CENTER(SPAN(I(_class='icon-download-alt'), 
@@ -124,17 +127,38 @@ class cuota(objbase):
                                     _onclick='func_abonar(%s)' % cuota.id,
                                     _class='btn btn-mini'))
                        ) if cuota.estado[0] != '2' else '',
-                            _id='tr_cuota_%s' % cuota.id
+                        _id='tr_cuota_%s' % cuota.id
                             )
                         )
+            # Analizamos que cuotas pagó y cuales adeuda.
+            if cuota.estado[0] != '2':
+                debe.append(cuota.valor_cuota)
+            else: pago.append(cuota.valor_cuota)
+
+        tbody.append(TR(TH('Total Pagó'), TH('Total Debe')))
+        tbody.append(TR(
+                        TD('+ $', SPAN("%.2f" % sum(pago), _id='ttpago'),
+                           INPUT(_name='pago', 
+                                _type='hidden',
+                                _id='input_pago'),
+                           _style='color:green'),
+                        TD("- $", SPAN("%.2f" % sum(debe), _id='ttdebe'),
+                           INPUT(_name='debe',
+                                _type='hidden',
+                                _id='input_debe'),
+                           _style='color:red')
+                        )
+                    )
         table.append(tbody)
 
         url = URL('cuotas', 'abonar_cuota', user_signature=True)
         javascript = """
             function func_abonar(cuotaid){
                 jQuery('#IDCuota').val(cuotaid);
+                jQuery('#input_pago').val(jQuery('#ttpago').html());
+                jQuery('#input_debe').val(jQuery('#ttdebe').html());
                 if(confirm('Desea aceptar el pago?')){
-                    ajax("%s", ['idcuota'], 'tr_cuota_' + cuotaid);
+                    ajax("%s", ['idcuota', 'pago', 'debe'], ':eval');
                 }
                 else {
                     alert('Canceló el pago!')
@@ -143,6 +167,22 @@ class cuota(objbase):
         """ % url
         
         return TAG[''](sepadador, input_, table, SCRIPT(javascript))
+
+    def f_limite(self, f_inicial, t_credito, cuotas):
+        """ Calculamos la fecha límite de pago de las cuotas, eliminando los 
+            días domingos.
+            f_inicial=fecha_inicial, t_credito=tipo_credito, cuota=cuota
+        """
+        fechas = []
+        inc = 0
+        for c in range(1, cuotas + 1):
+            r = f_inicial + timedelta((c * t_credito) + inc)
+            if r.strftime('%a').lower() in ['dom', 'sun']:
+                inc += 1
+                r += timedelta(1)
+            fechas.append(r)
+        return fechas
+        
 
     def generar(self, form, insert=False):
         prestamo = self.container.prestamo
@@ -162,6 +202,8 @@ class cuota(objbase):
             TOTAL = prestamo.monto_total(MONTO, INTERES)
             VALOR_CUOTA = prestamo.valor_cuota(TOTAL, CUOTAS)
 
+            fechas = self.f_limite(FECHA, TIPO_CREDITO, CUOTAS)
+
             #  Insertamos los valores a la base de datos.
             if insert:
                 dbcuota = self.container.db[self.name_table]
@@ -170,7 +212,7 @@ class cuota(objbase):
                             nro=c,
                             prestamo_id=form.vars.id,
                             valor_cuota=VALOR_CUOTA,
-                            fecha_limite=FECHA + timedelta(c * TIPO_CREDITO)
+                            fecha_limite=fechas[c - 1]
                             )
 
                 dbcuota._db.commit()
@@ -186,7 +228,7 @@ class cuota(objbase):
                     tbody.append(TR(
                                     TD(c),
                                     TD("$%.2f" % VALOR_CUOTA),
-                                    TD(FECHA + timedelta(c * TIPO_CREDITO))
+                                    TD(fechas[c - 1])
                                     )
                                 )
                 tbody.append(TR(TD('TOTAL:'),
@@ -195,41 +237,6 @@ class cuota(objbase):
                                     _colspan=2)))
                 table.append(tbody)
                 return table
-
-    def abonar(self, request):
-        cuota_id = request.vars.get('idcuota')
-        prestamo = self.container.prestamo
-        db = self.container.db
-        tbcuota = db[self.name_table]
-        tbprestamo = db[prestamo.name_table]
-
-
-        c = tbcuota(cuota_id)
-        c.update_record(fecha_pago=date.today(), estado=2)
-        
-        q = db((tbcuota.prestamo_id == c.prestamo_id) & (tbcuota.estado != 2))
-
-        if q.count() == 0:
-            #  Si los estados de cuotas del prestamos son distintas de 2
-            #  cambiamos el estado del prestamo a finalizado.
-            tbprestamo(c.prestamo_id).update_record(estado=2)
-            db.commit()
-            message = 'Finalizó el crédito: %s exitosamente' % c.prestamo_id
-            self.container.env.session.flash = message
-            redirect(URL('clientes', 'index', 
-                        args=['view', 'cliente', c.prestamo_id.cliente_id],
-                        user_signature=True,
-                        extension=False), client_side=True)
-        else:
-            tags = TAG[''](TD(c.nro), 
-                           TD("$%.2f" % c.valor_cuota),
-                           TD(c.fecha_limite),
-                           TD(SPAN('pagada', _class='label label-success')),
-                           TD(c.fecha_pago),
-                           TD(''))
-
-        db.commit()
-        return tags
 
     def calculo_periodo(self, periodo):
         """ 

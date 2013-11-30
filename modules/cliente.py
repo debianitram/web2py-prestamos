@@ -30,6 +30,7 @@ class cliente(objbase):
             Field('tipo_cliente', 'list:string'),
             Field('movil'),
             auth.signature,
+            migrate=True,
             format='%(apellido)s, %(nombre)s',
             common_filter=lambda q: db[self.name_table].is_active == True,
             )

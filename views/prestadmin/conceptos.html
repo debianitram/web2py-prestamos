@@ -1,0 +1,18 @@
+{{right_sidebar_enabled = True}}
+{{extend 'layout.html'}}
+
+{{block right_sidebar}}
+    <div class='well'>
+        <legend>Ayuda</legend>
+        <p>En esta sección podras administrar
+        los conceptos de los créditos que le 
+        serán otorgados a sus clientes.</p>
+    </div>
+
+{{end}}
+
+<div class='well'>
+    <H3>Conceptos de Créditos</H3>
+    <hr class='bs-docs-separator' />
+    {{=grid}}
+</div>

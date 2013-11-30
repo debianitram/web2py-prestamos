@@ -57,8 +57,7 @@ class objbase(object):
         db = self.container.db
         db[table](record).update_record(is_active=False)
         db.commit()
-        self.container.env.session.flash = 'Objeto (%s) eliminado' % record
-        redirect(URL('index'))
+        
 
     def search(self, field, operator, value=0, **kwgs):
         db = self.container.db
