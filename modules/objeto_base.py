@@ -1,20 +1,13 @@
 #-*- encoding:utf-8 -*-
-#
-# SAISE. Sistema Administrativo Integrador & Seguimiento de Expedientes.
 # Módulo:
-# Site: http://linuxapuntes.blogspot.com
+# Site: http://colmenalabs.com.ar
 #
 #                Colmena Labs (c) 2013.
 #
 # Programmer: Miranda Leiva, Martín Alejandro.
 # E-mail: debianitram (at) gmail.com
 #
-# License Code:
-# License Content:
 
-# NOTA:
-# This file contains:
-#    * objbase
 from gluon.http import redirect, HTTP
 from gluon.html import URL
 
