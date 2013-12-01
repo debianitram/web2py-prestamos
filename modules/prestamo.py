@@ -24,13 +24,13 @@ class prestamo(objbase):
         db.define_table(self.name_table,
             Field('cliente_id', db.cliente),
             Field('fecha', 'date'),
-            Field('monto', 'decimal(6, 2)'),
+            Field('monto', 'decimal(9, 2)'),
             Field('concepto', 
                   'reference %s' % self.container.concepto_prestamo.name_table),
             Field('tipo_credito', 'list:string'),
             Field('cuotas', 'integer'),
             Field('interes', 'integer'),
-            Field('monto_total', 'decimal(6, 2)',
+            Field('monto_total', 'decimal(9, 2)',
                   compute=lambda r: self.monto_total(r['monto'], r['interes'])),
             Field('observacion', 'text'),
             Field('estado', 'list:string', default=1),
@@ -115,7 +115,7 @@ class prestamo(objbase):
         if not rows:
             return H4('No presenta deudas', _class='alert alert-success')
 
-        for row in self.deudas(cliente_id):
+        for row in rows:
             tbody.append(TR(TD(row.id),
                             TD(row.fecha),
                             TD(row.concepto.nombre),
