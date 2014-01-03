@@ -40,9 +40,19 @@ response.menu = [
            False,
            URL('prestadmin', 'conceptos')
            ),
-          (SPAN(I(_class='icon-filter'), ' Consultas'),
-           False,
-           URL('consultas', 'caja_diaria')),
+          (SPAN(I(_class='icon-filter'), ' Consultas'), False, None, [
+            ('Consulta diaria', 
+              False,
+              URL(c='consultas', f='caja_diaria', user_signature=True)
+            ),
+            ('Cuotas cobradas',
+              False,
+              URL(c='consultas', f='cuotas_cobradas', user_signature=True)
+            ),
+            ('Resumen de créditos',
+              False,
+              URL(c='consultas', f='resumen_creditos', user_signature=True)
+            )]),
           LI(_class='divider'),
           (SPAN('Admin'), False, None, [
             ('Interfaz administrativa',

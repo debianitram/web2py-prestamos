@@ -1,0 +1,75 @@
+{{extend 'layout.html'}}
+
+<div class='well'>
+    <h3>Lista de cuotas abonadas</h3>
+    <hr class='bs-docs-separator'>
+
+    {{=form}}
+    {{if form.errors:}}
+        <div class="alert alert-error" style="width:260px;">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Atención!</strong> Debe llenar ambos campos
+        </div>
+        {{form.errors.clear()}}
+    {{pass}}
+
+    {{if accepts:}}
+        <hr class='bs-docs-separator'>
+        {{if len(results):}}
+            {{=A(I(_class='icon-white icon-print'), ' Imprimir consulta',
+                _href=URL(c='consultas', f='imprimir_cc',
+                          vars={'desde': request.vars.desde, 
+                                'hasta': request.vars.hasta},
+                        user_signature=True),
+                _class='btn btn-inverse btn-mini')}}
+        {{pass}}
+        
+        <table class="table table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>ID Cuota</th>
+                    <th>Nro Cuota</th>
+                    <th>Fecha Cobro</th>
+                    <th>Cliente</th>
+                    <th>Importe</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{for row in results:}}
+                    <tr>
+                        <td>{{=row.id}}</td>
+                        <td>{{=row.nro}}</td>
+                        <td>{{=row.fecha_pago}}</td>
+                        <td><strong>
+                            {{=A(config.client_name(row.prestamo_id.cliente_id),
+                                _href=URL(c='clientes', f='index',
+                                        args=('view', 
+                                                container.cliente.name_table,
+                                                row.prestamo_id.cliente_id),
+                                        user_signature=True))}}
+                            </strong>
+                        </td>
+                        <td>$ {{=row.valor_cuota}}</td>
+                    </tr>
+                {{pass}}
+                <tr>
+                    <td style="vertical-align:middle">
+                        <strong>Total cobros:</strong>
+                    </td>
+                    <td colspan="2" style="vertical-align:middle">
+                        <strong>
+                            <span style='color:red'>{{=len(results)}}</span>
+                        </strong>
+                    </td>
+                    <td style="vertical-align:middle; text-align:right">
+                        <strong>Saldo Total:</strong></td>
+                    <td style="vertical-align:middle; text-align:center">
+                        <h4 style='color:red'>
+                            {{="$%.2f" % sum([c.valor_cuota for c in results])}}
+                        </h4>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {{pass}}  
+</div>

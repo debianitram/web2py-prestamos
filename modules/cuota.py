@@ -306,5 +306,3 @@ class cuota(objbase):
                     Q_ABONADAS_DATE=Q_ABONADAS_DATE,
                     TQ_ABONADAS_DATE=TQ_ABONADAS_DATE,
                     G_XCIEN=G_XCIEN)
-
-        

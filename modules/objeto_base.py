@@ -23,16 +23,16 @@ class objbase(object):
     def define_tables(self):
         pass
 
-    def setLabels(self, dbconf):
+    def labels(self, dbconf):
         pass
 
-    def setReadableAndWritable(self, dbconf):
+    def readable_writable(self, dbconf):
         dbconf.id.readable, dbconf.id.writable = (False, False)
 
-    def setRequires(self, dbconf):
+    def requires(self, dbconf):
         pass
 
-    def setRepresent(self, dbconf):
+    def represents(self, dbconf):
         pass
 
     # Controles.
@@ -83,7 +83,7 @@ class objbase(object):
                                  limitby=limitby,
                                  orderby=orderby,
                                  cache=cache,
-                                 cacheable=cachable)
+                                 cacheable=cacheable)
         else:
             return db(q).select(limitby=limitby,
                                 orderby=orderby,

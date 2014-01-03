@@ -25,4 +25,5 @@ if request.is_local:
 config = Storage()
 # Extra
 config.get_name_of = lambda user: "%(last_name)s, %(first_name)s" % user
+config.client_name = lambda row: "%(apellido)s, %(nombre)s" % row
 config.app_installed = False

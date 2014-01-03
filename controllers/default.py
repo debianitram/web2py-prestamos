@@ -47,7 +47,7 @@ def index():
                                       user_signature=True))
     fields[1].represent = lambda value, row: \
                           SPAN('ID: %s -> Cuota: %s' % (row.prestamo_id, value))
-    fields[2].represent = lambda value, row: SPAN('$%.2f', value)
+    fields[2].represent = lambda value, row: SPAN('$%.2f' % value)
     fields[3].represent = lambda value, row: SPAN(value, _style='color:red') \
                           if value == request.now.date() else value
 
