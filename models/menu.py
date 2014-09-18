@@ -7,7 +7,7 @@
 
 response.logo = A(B('Colmena Labs'),XML('&trade;&nbsp;'),
                   _class="brand",_href="http://colmenalabs.com.ar/")
-response.title = 'Sistema de Prestamos'
+response.title = 'Cambios para el curso de web2py'
 response.subtitle = 'Villa Parque - ver. 1.0'
 
 ## read more at http://dev.w3.org/html5/markup/meta.name.html
